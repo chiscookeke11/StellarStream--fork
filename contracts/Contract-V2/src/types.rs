@@ -106,6 +106,16 @@ pub struct PermitStreamCreatedEvent {
     pub timestamp: u64,
 }
 
+/// Emitted when the admin is transferred to a new address.
+#[contracttype]
+#[derive(Clone, Debug)]
+pub struct AdminTransferredEvent {
+    pub previous_admin: Address,
+    pub new_admin: Address,
+    pub timestamp: u64,
+}
+
+/// Emitted when the contract is paused by the admin.
 #[contracttype]
 #[derive(Clone, Debug)]
 pub struct ContractPausedEvent {

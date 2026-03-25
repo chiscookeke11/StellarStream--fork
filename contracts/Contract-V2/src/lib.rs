@@ -73,6 +73,29 @@ impl Contract {
         storage::get_threshold(&env)
     }
 
+    /// Transfer admin rights to a new address (e.g. a multisig or DAO contract).
+    ///
+    /// The current admin must authorise this call. The new admin becomes the
+    /// sole admin with threshold = 1, ready to be promoted to a full multisig
+    /// via `set_admins` if desired.
+    pub fn transfer_admin(env: Env, new_admin: Address) -> Result<(), ContractError> {
+        let previous_admin = storage::get_admin(&env);
+        previous_admin.require_auth();
+
+        storage::set_admin(&env, &new_admin);
+
+        env.events().publish(
+            (symbol_short!("adm_xfer"), new_admin.clone()),
+            AdminTransferredEvent {
+                previous_admin,
+                new_admin,
+                timestamp: env.ledger().timestamp(),
+            },
+        );
+
+        Ok(())
+    }
+
     // ----------------------------------------------------------------
     // Issue #396 — Dust Threshold
     // ----------------------------------------------------------------

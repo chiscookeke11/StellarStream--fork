@@ -596,6 +596,49 @@ fn test_set_admins_replaces_list_and_threshold() {
     assert_eq!(client.get_admins().len(), 3u32);
 }
 
+// ── transfer_admin tests ──────────────────────────────────────────────────────
+
+#[test]
+fn test_transfer_admin_changes_admin() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let admin = Address::generate(&env);
+    let (_, client) = setup_v2(&env, &admin);
+
+    let new_admin = Address::generate(&env);
+    client.transfer_admin(&new_admin);
+
+    assert_eq!(client.admin(), new_admin);
+}
+
+#[test]
+fn test_transfer_admin_old_admin_loses_access() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let admin = Address::generate(&env);
+    let (_, client) = setup_v2(&env, &admin);
+
+    let new_admin = Address::generate(&env);
+    client.transfer_admin(&new_admin);
+
+    // After transfer, the admin list contains only new_admin.
+    assert_eq!(client.get_admins().len(), 1u32);
+    assert_eq!(client.get_admins().get(0).unwrap(), new_admin);
+}
+
+#[test]
+fn test_transfer_admin_requires_current_admin_auth() {
+    let env = Env::default();
+    let admin = Address::generate(&env);
+    let (_, client) = setup_v2(&env, &admin);
+
+    let new_admin = Address::generate(&env);
+
+    // No auth mocked at all — should panic/error because admin hasn't authorised.
+    let result = client.try_transfer_admin(&new_admin);
+    assert!(result.is_err());
+}
+
 // ── Issue #396 — Dust threshold tests ────────────────────────────────────────
 
 #[test]
