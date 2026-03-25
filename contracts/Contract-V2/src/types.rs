@@ -57,6 +57,34 @@ pub struct PermitArgs {
 }
 
 // ----------------------------------------------------------------
+// Batch Read Helper Types
+// ----------------------------------------------------------------
+
+/// The lifecycle status of a stream at a given point in time.
+#[contracttype]
+#[derive(Clone, Debug, PartialEq)]
+pub enum StreamStatus {
+    /// Not found — the stream ID does not exist.
+    NotFound,
+    /// Active — funds are still streaming.
+    Active,
+    /// Completed — the stream end_time has passed and all funds can be claimed.
+    Completed,
+    /// Cancelled — the stream was manually cancelled.
+    Cancelled,
+}
+
+/// A compact summary of a stream returned by `get_streams_batch`.
+/// Includes the stream's full data, the currently unlocked amount, and its status.
+#[contracttype]
+#[derive(Clone, Debug)]
+pub struct StreamBatchEntry {
+    pub stream_id: u64,
+    pub unlocked_amount: i128,
+    pub status: StreamStatus,
+}
+
+// ----------------------------------------------------------------
 // Events
 // ----------------------------------------------------------------
 

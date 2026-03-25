@@ -988,7 +988,7 @@ fn test_create_batch_streams_atomic_failure() {
     let (token_id, token_client, asset_client) = create_token(&env, &token_admin);
 
     // Mint insufficient tokens
-    asset_client.mint(&sender, &100_000_000);
+    asset_client.mint(&sender, &200_000_000);
 
     let (_, v2_client) = setup_v2(&env, &admin);
 
