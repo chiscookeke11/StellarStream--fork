@@ -75,6 +75,28 @@ env.events().publish((symbol_short!("cancel"), stream_id), stream.sender);
 
 ---
 
+### 4. `migrate`
+
+**Emitted when**: A stream is migrated from V1 to V2 contract
+
+**Topics**:
+- `Symbol("migrate")` - Event type identifier
+
+**Data**:
+- `(v1_id: u64, v2_id: u64, sender: Address, remaining_balance: i128)` - V1 stream ID, V2 stream ID, migrator address, and remaining balance migrated
+
+**Example**:
+```rust
+env.events().publish(
+    Symbol::new(&env, "migrate"),
+    (v1_stream_id, v2_stream_id, caller, remaining_balance)
+);
+```
+
+**Indexer Query**: Filter by `v1_id` or `v2_id` to track stream migrations, or by `sender` to track user migration activity.
+
+---
+
 ## Indexer Integration Guide
 
 ### Filtering Streams
@@ -84,7 +106,7 @@ All events include `stream_id` in either topics or data, enabling efficient filt
 // Example: Get all events for stream #42
 const events = await indexer.getEvents({
   contractId: STELLAR_STREAM_CONTRACT,
-  topics: [["create", "withdraw", "cancel"], "*"],
+  topics: [["create", "withdraw", "cancel", "migrate"], "*"],
   filters: { stream_id: 42 }
 });
 ```
@@ -96,6 +118,7 @@ To construct a complete user history:
 2. **Incoming Streams**: Query `create` events, then filter by `receiver` from contract state
 3. **Withdrawals**: Query `withdraw` events where `receiver = user_address`
 4. **Cancellations**: Query `cancel` events where `sender = user_address`
+5. **Migrations**: Query `migrate` events where `sender = user_address` to track V1 to V2 migrations
 
 ### Event Ordering
 Events are ordered by ledger sequence. Use `env.ledger().timestamp()` from ledger metadata to reconstruct timeline.

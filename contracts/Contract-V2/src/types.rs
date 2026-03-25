@@ -64,6 +64,17 @@ pub struct StreamMigratedEvent {
 
 #[contracttype]
 #[derive(Clone, Debug)]
+pub enum MigrationEvent {
+    Migrated {
+        v1_id: u64,
+        v2_id: u64,
+        sender: Address,
+        remaining_balance: i128,
+    },
+}
+
+#[contracttype]
+#[derive(Clone, Debug)]
 pub struct StreamCreatedV2Event {
     pub stream_id: u64,
     pub sender: Address,

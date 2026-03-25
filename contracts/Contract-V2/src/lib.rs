@@ -1,7 +1,7 @@
 #![no_std]
 #![allow(clippy::too_many_arguments)]
 use soroban_sdk::xdr::ToXdr;
-use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, Vec};
+use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, Symbol, Vec};
 
 mod errors;
 mod storage;
@@ -10,7 +10,7 @@ mod v1_interface;
 
 use errors::ContractError;
 pub use types::{
-    ContractPausedEvent, ContractUnpausedEvent, PermitArgs, PermitStreamCreatedEvent, StreamArgs,
+    ContractPausedEvent, ContractUnpausedEvent, MigrationEvent, PermitArgs, PermitStreamCreatedEvent, StreamArgs,
     StreamCancelledV2Event, StreamClaimV2Event, StreamCreatedV2Event, StreamMigratedEvent,
     StreamV2,
 };
@@ -196,6 +196,12 @@ impl Contract {
                 migrated_amount: remaining,
                 timestamp: now,
             },
+        );
+
+        // Emit migration event for indexer
+        env.events().publish(
+            Symbol::new(&env, "migrate"),
+            (v1_stream_id, v2_stream_id, caller.clone(), remaining),
         );
 
         Ok(v2_stream_id)
