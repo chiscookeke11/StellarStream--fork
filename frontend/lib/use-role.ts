@@ -100,5 +100,5 @@ export function useRole(): UseRoleResult {
 
     if (isConnecting || (isConnected && role === null)) return { status: "loading", role: null };
     if (!isConnected || !address) return { status: "unauthenticated", role: null };
-    return { status: "ready", role, can: (p) => can(role!, p) };
+    return { status: "ready", role: role as OrgRole, can: (p) => can(role!, p) };
 }

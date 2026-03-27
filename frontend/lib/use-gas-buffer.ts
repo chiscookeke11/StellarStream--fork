@@ -20,7 +20,7 @@ export interface GasBufferStatus {
 
 async function fetchGasBufferStatus(): Promise<GasBufferStatus> {
     await new Promise((r) => setTimeout(r, 600));
-    const balanceXlm = 4.2; // mock — triggers "Low Gas" warning
+    const balanceXlm: number = 4.2; // mock — triggers "Low Gas" warning
     const burnRatePerDayXlm = 0.8;
     const daysRemaining = burnRatePerDayXlm > 0 ? balanceXlm / burnRatePerDayXlm : null;
     return {
