@@ -399,4 +399,7 @@ export const mockClient: StellarStreamContractClient = {
     description:
       "Token streaming with multi-sig proposals, dynamic vesting curves, and OFAC compliance",
   }),
+  depositGasBuffer: async () => {},
+  withdrawGasBuffer: async () => {},
+  getGasBufferBalance: async () => BigInt(0),
 };

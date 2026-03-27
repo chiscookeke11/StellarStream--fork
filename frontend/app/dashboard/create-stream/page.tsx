@@ -1081,8 +1081,7 @@ export default function CreateStreamPage() {
 
                   {step === 1 && <Step1 form={form} update={update} />}
                   {step === 2 && <Step2 form={form} update={update} />}
-                  {step === 3 && <Step3 form={form} onSign={handleSign} signing={signing} priorityTier={priorityTier.id} onPriorityChange={setPriorityTierId} />}
-                  {step === 3 && <Step3 form={form} onSign={handleSign} signing={signing} recoveryError={recoveryError} onDismissRecovery={() => setRecoveryError(null)} onAcceptFee={handleAcceptFee} onSwapToXLM={() => { setStep(1); setAnimKey((k) => k + 1); }} />}
+                  {step === 3 && <Step3 form={form} onSign={handleSign} signing={signing} priorityTier={priorityTier.id} onPriorityChange={setPriorityTierId} recoveryError={recoveryError} onDismissRecovery={() => setRecoveryError(null)} onAcceptFee={handleAcceptFee} onSwapToXLM={() => { setStep(1); setAnimKey((k) => k + 1); }} />}
 
                   {step < 3 && (
                     <div className="flex gap-3 mt-8">
