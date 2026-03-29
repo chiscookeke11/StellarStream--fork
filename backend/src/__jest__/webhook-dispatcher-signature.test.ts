@@ -44,10 +44,23 @@ describe("WebhookDispatcherService signatures", () => {
 
     await service.processDeliveries();
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [, options] = fetchMock.mock.calls[0];
-    expect(options.headers["X-Nebula-Signature"]).toBeDefined();
-    expect(options.headers["X-Nebula-Signature"]).toBe(options.headers["X-Webhook-Signature"]);
+    if (fetchMock.mock.calls.length !== 1) {
+      throw new Error(`Expected 1 fetch call, received ${fetchMock.mock.calls.length}`);
+    }
+    const firstCall = fetchMock.mock.calls[0] as unknown as [
+      string,
+      { headers: Record<string, string> }
+    ];
+    const options = firstCall[1];
+    if (!options?.headers?.["X-Nebula-Signature"]) {
+      throw new Error("Missing X-Nebula-Signature header");
+    }
+    if (options.headers["X-Nebula-Signature"] !== options.headers["X-Webhook-Signature"]) {
+      throw new Error("Nebula signature header does not match legacy webhook signature");
+    }
+    if (updateMock.mock.calls.length !== 1) {
+      throw new Error(`Expected 1 delivery update, received ${updateMock.mock.calls.length}`);
+    }
     expect(updateMock).toHaveBeenCalledWith({
       where: { id: "delivery_1" },
       data: { status: "success", attempts: 1 },

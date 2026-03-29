@@ -122,6 +122,8 @@ export class WebhookDispatcherService {
       JSON.stringify(delivery.payload),
       webhook.secretKey
     );
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     try {
       const response = await fetch(webhook.url, {
@@ -134,8 +136,9 @@ export class WebhookDispatcherService {
           "User-Agent": "StellarStream-Webhook/1.0",
         },
         body: JSON.stringify(delivery.payload),
-        timeout: 10000,
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         await (prisma as any).webhookDelivery.update({
@@ -147,6 +150,7 @@ export class WebhookDispatcherService {
         await this.scheduleRetry(delivery, `HTTP ${response.status}`);
       }
     } catch (error) {
+      clearTimeout(timeoutId);
       const errorMsg = error instanceof Error ? error.message : String(error);
       await this.scheduleRetry(delivery, errorMsg);
     }
